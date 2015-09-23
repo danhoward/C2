@@ -41,6 +41,15 @@ PORT=3000 ./script/start
 open http://localhost:3000
 ```
 
+## Submitting Requests
+In order to submit requests, you will need to configure what type of proposal form you will use. We recommend using the national capitol region, or NCR, form. 
+To set that for your user, use:
+
+```bash
+rails console
+>>> User.find_by(email_address: "your@email.com").update(client_slug: "ncr")
+```
+
 ### Viewing the mailers
 
 As emails are sent, they will be visible at http://localhost:3000/letter_opener. If you are working on an email mailer/template, you can view all of them at http://localhost:3000/mail_view/.
