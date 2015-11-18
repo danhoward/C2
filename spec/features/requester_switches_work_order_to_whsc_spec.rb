@@ -10,6 +10,7 @@ feature 'Requester switches work order to WHSC' do
   let!(:approver) { create(:user) }
 
   before do
+    RolesConversion.new.ncr_budget_approvers
     work_order.setup_approvals_and_observers
     work_order.individual_steps.first.approve!
     login_as(work_order.requester)

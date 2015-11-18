@@ -38,9 +38,22 @@ describe User do
   end
 
   describe '.for_email' do
-    it 'downcases and strips the email' do
-      user = User.for_email('   miXedCaSe@eXaMple.com')
-      expect(user.email_address).to eq('mixedcase@example.com')
+    it "returns a user for the downcase, striped email" do
+      email = "mixedcase@example.com"
+      user = create(:user, email_address: email)
+
+      user = User.for_email("   miXedCaSe@eXaMple.com")
+
+      expect(user).to eq(user)
+    end
+
+    it "returns a null user if none exists for email passed in" do
+      null_user = double
+      expect(NullUser).to receive(:new).and_return(null_user)
+
+      user = User.for_email("not_in_system@example.com")
+
+      expect(user).to eq null_user
     end
   end
 

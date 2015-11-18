@@ -24,7 +24,6 @@ RSpec.configure do |config|
   config.before(:suite) do
     DatabaseCleaner.strategy = :transaction
     DatabaseCleaner.clean_with(:truncation)
-    Rails.application.load_seed
   end
 
   config.before(:each) do
@@ -35,7 +34,6 @@ RSpec.configure do |config|
     end
 
     DatabaseCleaner.start
-    Rails.application.load_seed
   end
 
   config.after(:each) do

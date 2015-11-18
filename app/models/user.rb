@@ -45,12 +45,8 @@ class User < ActiveRecord::Base
     self.user_roles.find_or_create_by!(role: role)
   end
 
-  def self.with_role(name_or_role)
-    if name_or_role.is_a?(Role)
-      name_or_role.users
-    else
-      User.joins(:roles).where(roles: { name: name_or_role })
-    end
+  def self.with_role(role_name)
+    User.joins(:roles).where(roles: { name: role_name }).first
   end
 
   def self.sql_for_role_slug(role, slug)
@@ -94,15 +90,17 @@ class User < ActiveRecord::Base
   end
 
   def self.for_email(email)
-    User.find_or_create_by(email_address: email.strip.downcase)
+    User.find_by(email_address: email.strip.downcase) || NullUser.new
   end
 
   def self.for_email_with_slug(email, client_slug)
-    u = self.for_email(email)
-    unless u.client_slug
-      u.client_slug = client_slug
+    user = self.for_email(email)
+
+    if user.client_slug.blank?
+      user.client_slug = client_slug
     end
-    u
+
+    user
   end
 
   def self.from_oauth_hash(auth_hash)

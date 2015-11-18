@@ -63,7 +63,7 @@ feature 'Creating an NCR work order' do
       expect(work_order.description).to eq('desc content')
       expect(proposal.requester).to eq(requester)
       expect(proposal.approvers.map(&:email_address)).to eq(
-        [approver.email_address, Ncr::Mailboxes.ba80_budget])
+        [approver.email_address, Ncr::Mailboxes.ba80_budget]).compact
     end
 
     scenario 'saves a BA60 Proposal with the attributes' do
@@ -85,15 +85,15 @@ feature 'Creating an NCR work order' do
       proposal = Proposal.last
       work_order = proposal.client_data
       expect(work_order.expense_type).to eq('BA60')
-      expect(proposal.approvers.map(&:email_address)).to eq [
+      expect(proposal.approvers.map(&:email_address)).to eq([
         approver.email_address,
         Ncr::Mailboxes.ba61_tier1_budget,
         Ncr::Mailboxes.ba61_tier2_budget
-      ]
+      ].compact)
     end
 
     scenario "flash message on error does not persist" do
-      approver = create(:user, client_slug: "ncr")
+      _approver = create(:user, client_slug: "ncr")
       login_as(requester)
 
       visit '/ncr/work_orders/new'
@@ -132,6 +132,15 @@ feature 'Creating an NCR work order' do
     end
 
     scenario "does not show system approver emails as approver options", :js do
+      ba61_role = Role.find_or_create_by(name: "BA61_tier1_budget_approver")
+      create(:user).add_role(ba61_role)
+      ba61_tier_2_role = Role.find_or_create_by(name: "BA61_tier2_budget_approver")
+      create(:user).add_role(ba61_tier_2_role)
+      ba80_role = Role.find_or_create_by(name: "BA80_budget_approver")
+      create(:user).add_role(ba80_role)
+      ba80_ool_role = Role.find_or_create_by(name: "OOL_BA80_budget_approver")
+      create(:user).add_role(ba80_ool_role)
+
       expect(Ncr::WorkOrder.all_system_approver_emails.size).to eq 4
       login_as(requester)
       approving_official = create(:user, client_slug: "ncr")

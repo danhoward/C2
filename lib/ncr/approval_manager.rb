@@ -28,7 +28,7 @@ module Ncr
 
     # Check the approvers, accounting for frozen approving official
     def approvers_emails
-      emails = system_approver_emails
+      emails = system_approver_emails.compact
       if work_order.approver_email_frozen?
         emails.unshift(work_order.approving_official.email_address)
       else
